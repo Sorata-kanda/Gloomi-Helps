@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="
+            default-src 'self';
+            script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+            connect-src 'self'
+                https://*.googleapis.com
+                https://*.firebaseio.com
+                https://identitytoolkit.googleapis.com
+                https://securetoken.googleapis.com;
+        "
+    >
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gloomi Help</title>
+
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- FIREBASE LOGIN -->
+
+        <div id="loginSection" class="section">
+
+            <h1>Gloomi Help</h1>
+
+            <p class="subtitle">
+                LPU Class Attendance Assistant
+            </p>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+            >
+
+            <button id="loginBtn">
+                Sign In
+            </button>
+
+            <button
+                id="signupBtn"
+                class="secondary"
+            >
+                Create Account
+            </button>
+
+        </div>
+
+
+        <!-- CODETANTRA SETUP -->
+
+        <div
+            id="codetantraSection"
+            class="section hidden"
+        >
+
+            <h1>CodeTantra Setup</h1>
+
+            <p class="subtitle">
+                Enter your LPU CodeTantra credentials
+            </p>
+
+            <input
+                type="text"
+                id="codetantraUsername"
+                placeholder="CodeTantra Username"
+                autocomplete="off"
+            >
+
+            <input
+                type="password"
+                id="codetantraPassword"
+                placeholder="CodeTantra Password"
+                autocomplete="off"
+            >
+
+            <button id="saveCodeTantraBtn">
+                Save & Continue
+            </button>
+
+        </div>
+
+
+        <p id="message"></p>
+
+    </div>
+
+    <script
+        type="module"
+        src="login.js"
+    ></script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        http-equiv="Content-Security-Policy"
+        content="
+            default-src 'self';
+            script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+            connect-src 'self'
+                https://*.googleapis.com
+                https://*.firebaseio.com
+                https://identitytoolkit.googleapis.com
+                https://securetoken.googleapis.com;
+        "
+    >
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CodeTantra Setup</title>
+
+    <link rel="stylesheet" href="codetantra.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>CodeTantra Setup</h1>
+
+        <p class="subtitle">
+            Enter your LPU CodeTantra credentials
+        </p>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="CodeTantra Username"
+            autocomplete="off"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="CodeTantra Password"
+            autocomplete="off"
+        >
+
+        <button id="saveBtn">
+            Save & Continue
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+    <script
+        type="module"
+        src="codetantra.js"
+    ></script>
+
+</body>
+</html>

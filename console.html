@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Gloomi Help — Console</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+
+            margin: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: #000;
+
+            color: #fff;
+
+            font-family:
+                Consolas,
+                "Courier New",
+                monospace;
+
+        }
+
+
+        body {
+
+            display: flex;
+
+            flex-direction: column;
+
+            overflow: hidden;
+
+        }
+
+
+        /* ====================================================
+           COUNTDOWN
+           ==================================================== */
+
+        #countdown {
+
+            height: 48px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 16px;
+
+            background: #080808;
+
+            border-bottom:
+                1px solid #222;
+
+        }
+
+
+        #countdown-label {
+
+            color: #4da3ff;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+
+        #countdown-time {
+
+            color: #45d483;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* ====================================================
+           LOG AREA
+           ==================================================== */
+
+        #console {
+
+            flex: 1;
+
+            padding: 14px;
+
+            overflow-y: auto;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+            font-size: 13px;
+
+            line-height: 1.55;
+
+        }
+
+
+        .log {
+            color: #ffffff;
+        }
+
+
+        .warn {
+            color: #ffd166;
+        }
+
+
+        .error {
+            color: #ff5c5c;
+        }
+
+
+        /* Scrollbar */
+
+        #console::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #console::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        #console::-webkit-scrollbar-thumb {
+            background: #333;
+
+            border-radius: 4px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div id="countdown">
+
+        <div id="countdown-label">
+            Waiting...
+        </div>
+
+        <div id="countdown-time">
+            --:--:--
+        </div>
+
+    </div>
+
+
+    <div id="console"></div>
+
+
+    <script>
+
+        const consoleEl =
+            document.getElementById(
+                "console"
+            );
+
+
+        const countdownLabel =
+            document.getElementById(
+                "countdown-label"
+            );
+
+
+        const countdownTime =
+            document.getElementById(
+                "countdown-time"
+            );
+
+
+        // ====================================================
+        // LOGS
+        // ====================================================
+
+        window.debug.onLog(
+            (data) => {
+
+                const line =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                line.className =
+                    data.type || "log";
+
+
+                line.textContent =
+                    data.message;
+
+
+                consoleEl.appendChild(
+                    line
+                );
+
+
+                // Automatically scroll to newest log
+                consoleEl.scrollTop =
+                    consoleEl.scrollHeight;
+            }
+        );
+
+
+        // ====================================================
+        // COUNTDOWN
+        // ====================================================
+
+        window.debug.onCountdown(
+            (data) => {
+
+                if (
+                    !data ||
+                    !data.currentClass
+                ) {
+
+                    countdownLabel.textContent =
+                        "Waiting...";
+
+                    countdownTime.textContent =
+                        "--:--:--";
+
+                    return;
+                }
+
+
+                countdownLabel.textContent =
+                    `${data.currentClass.title} — ${data.label}`;
+
+
+                countdownTime.textContent =
+                    data.remaining;
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

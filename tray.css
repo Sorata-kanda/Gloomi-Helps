@@ -1,0 +1,507 @@
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow-y: auto;
+    scrollbar-width: thin;          /* Options: auto, thin, none */
+    scrollbar-color: #141414 #141414;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    font-size: 16px;
+    background: #141414;
+    color: #f2f2f2;
+}
+
+
+/* ============================================================
+   BODY / MAIN LAYOUT
+   ============================================================ */
+
+body {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+
+    border: 1px solid #2b2b2b;
+    border-radius: 10px;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.header {
+    height: 50px;
+    min-height: 50px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 14px;
+
+    border-bottom: 1px solid #292929;
+}
+
+
+.header-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.logo {
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+
+.header-title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+
+/* ============================================================
+   CLOSE BUTTON
+   ============================================================ */
+
+.quit-btn {
+    width: 30px;
+    height: 30px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #777;
+
+    font-size: 22px;
+
+    line-height: 30px;
+
+    cursor: pointer;
+
+    border-radius: 6px;
+
+    padding: 0;
+}
+
+
+.quit-btn:hover {
+    color: #ddd;
+
+    background: #252525;
+}
+
+
+/* ============================================================
+   SECTION LABEL
+   ============================================================ */
+
+.section-label {
+    margin: 13px 14px 8px;
+    flex-shrink: 0;
+    color: #666;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   CLASS LIST
+   ============================================================ */
+
+.class-list {
+    padding: 0 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    /*
+     * Take all remaining vertical space.
+     * This is the important part that allows
+     * the class list to scroll without pushing
+     * the clock outside the window.
+     */
+    flex: 1;
+    min-height: 0;
+}
+
+
+/* ============================================================
+   CLASS LIST SCROLLBAR
+   ============================================================ */
+
+.class-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+
+.class-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.class-list::-webkit-scrollbar-thumb {
+    background: #3a3a3a;
+
+    border-radius: 10px;
+}
+
+
+.class-list::-webkit-scrollbar-thumb:hover {
+    background: #505050;
+}
+
+
+/* ============================================================
+   CLASS CARD
+   ============================================================ */
+
+.class-item {
+    min-height: 32px;
+
+    flex-shrink: 0;
+
+    padding: 9px 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background: #1d1d1d;
+
+    border: 1px solid #303030;
+
+    border-radius: 9px;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.class-item:hover {
+    background: #222222;
+
+    border-color: #3a3a3a;
+}
+
+
+/* ============================================================
+   CLASS LEFT SIDE
+   ============================================================ */
+
+.class-item-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+
+/* ============================================================
+   CLASS STATUS DOT
+   ============================================================ */
+
+.class-dot {
+    width: 8px;
+    height: 8px;
+
+    min-width: 8px;
+
+    border-radius: 50%;
+}
+
+
+/* ------------------------------------------------------------
+   UPCOMING — BLUE
+   ------------------------------------------------------------ */
+
+.class-dot.upcoming {
+    background: #4da3ff;
+
+    box-shadow:
+        0 0 7px
+        rgba(77, 163, 255, 0.35);
+}
+
+
+/* ------------------------------------------------------------
+   JOINING — ORANGE
+   ------------------------------------------------------------ */
+
+.class-dot.joining {
+    background: #f0a64b;
+
+    box-shadow:
+        0 0 8px
+        rgba(240, 166, 75, 0.4);
+}
+
+
+/* ------------------------------------------------------------
+   ONGOING — GREEN
+   ------------------------------------------------------------ */
+
+.class-dot.in-class {
+    background: #45d483;
+
+    box-shadow:
+        0 0 8px
+        rgba(69, 212, 131, 0.4);
+}
+
+
+/* ------------------------------------------------------------
+   ENDED — GREY
+   ------------------------------------------------------------ */
+
+.class-dot.done {
+    background: #777777;
+}
+
+
+/* ============================================================
+   CLASS INFORMATION
+   ============================================================ */
+
+.class-info {
+    min-width: 0;
+}
+
+
+.class-name {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #eeeeee;
+
+    margin-bottom: 3px;
+}
+
+
+.class-time {
+    font-size: 12px;
+
+    color: #777777;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   CLASS COUNTDOWN
+   ============================================================ */
+
+.class-countdown {
+    margin-top: 4px;
+
+    font-size: 12px;
+
+    color: #4da3ff;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   STATUS BADGES
+   ============================================================ */
+
+.badge {
+    padding: 5px 11px;
+
+    border-radius: 15px;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    margin-left: 8px;
+}
+
+
+/* ------------------------------------------------------------
+   UPCOMING
+   ------------------------------------------------------------ */
+
+.badge.upcoming {
+    background: #1e3b5b;
+
+    color: #4da3ff;
+}
+
+
+/* ------------------------------------------------------------
+   JOINING
+   ------------------------------------------------------------ */
+
+.badge.joining {
+    background: #4b351d;
+
+    color: #f0a64b;
+}
+
+
+/* ------------------------------------------------------------
+   ONGOING
+   ------------------------------------------------------------ */
+
+.badge.in-class {
+    background: #183c2a;
+
+    color: #45d483;
+}
+
+
+/* ------------------------------------------------------------
+   ENDED
+   ------------------------------------------------------------ */
+
+.badge.done {
+    background: #303030;
+
+    color: #888888;
+}
+
+
+/* ============================================================
+   STATUS BAR
+   ============================================================ */
+
+.status-bar {
+    margin: 8px 14px 0;
+
+    height: 34px;
+
+    min-height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 12px;
+
+    border: 1px solid #303030;
+
+    border-radius: 8px;
+
+    background: #1b1b1b;
+
+    color: #777777;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* ============================================================
+   CLOCK
+   ============================================================ */
+
+.clock-section {
+    margin-top: 22px;
+    margin-bottom: 100px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+
+.clock {
+    font-size: 39px;
+
+    line-height: 1.1;
+
+    font-weight: 300;
+
+    letter-spacing: 1px;
+
+    color: #eeeeee;
+}
+
+
+.clock-date {
+    margin-top: 4px;
+
+    font-size: 13px;
+
+    color: #686868;
+}
+
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.empty-state {
+    height: 120px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    color: #666666;
+}
+
+
+.empty-icon {
+    font-size: 26px;
+}
+
+
+.empty-text {
+    font-size: 13px;
+}

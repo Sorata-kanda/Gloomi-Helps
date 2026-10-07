@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Gloomi Help</title>
+
+    <link
+        rel="stylesheet"
+        href="tray.css"
+    />
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="header-left">
+
+            <img
+                src="assets/icon.png"
+                class="logo"
+                onerror="this.style.display='none'"
+            />
+
+            <span class="header-title">
+                Gloomi Help
+            </span>
+
+        </div>
+
+        <button
+            class="quit-btn"
+            id="quitBtn"
+            title="Quit"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="section-label">
+        UPCOMING
+    </div>
+
+    <div class="scroller">
+        <div class="class-list" id="classList">
+            <div class="empty-state">
+                <div class="empty-icon">
+                    ⏳
+                </div>
+                <div class="empty-text">
+                    Fetching classes...
+                </div>
+            </div>
+        </div>
+
+
+        <div
+            class="status-bar"
+            id="statusBar"
+        >
+            Starting bot...
+        </div>
+
+
+        <div class="clock-section">
+            <div
+                class="clock"
+                id="clock"
+            >
+                00:00:00
+            </div>
+
+            <div
+                class="clock-date"
+                id="clockDate"
+            ></div>
+
+        </div>
+    </div>
+    
+
+
+    <script src="tray.js"></script>
+
+</body>
+
+</html>
