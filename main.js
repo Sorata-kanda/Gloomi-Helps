@@ -12,6 +12,14 @@ const { chromium } = require("playwright");
 
 
 // ============================================================
+// ELECTRON STORAGE
+// ============================================================
+
+app.setPath(
+    "userData",
+    path.join(app.getPath("appData"), "Gloomi Help")
+);
+// ============================================================
 // CONFIG
 // ============================================================
 
@@ -29,7 +37,7 @@ const MEETINGS_URL =
 
 const MEETING_BASE_URL = "https://lovelyprofessionaluniversity.codetantra.com";
 
-const GAP_THRESHOLD_MINS = 10;
+const GAP_THRESHOLD_MINS = 5;
 
 // ============================================================
 // CREDENTIALS
@@ -541,6 +549,71 @@ async function countdownWait(label, waitMs, currentClass = null) {
         );
     }
 }
+// ============================================================
+// GET IN-CLASS REMAINING TIME
+// ============================================================
+
+async function getInClassRemainingMs(classPage) {
+    try {
+        const classFrame = classPage
+            .frames()
+            .find((frame) =>
+                frame.url().includes("/js/ctai/m2.html")
+            );
+
+        if (!classFrame) {
+            throw new Error("In-class iframe not found");
+        }
+
+        const timeLeftEl = classFrame
+            .locator("span.tabular-nums")
+            .first();
+
+        await timeLeftEl.waitFor({
+            state: "visible",
+            timeout: 20000,
+        });
+
+        const timeLeftStr = await timeLeftEl.innerText();
+
+        const parts = timeLeftStr
+            .trim()
+            .split(":")
+            .map(Number);
+
+        let msUntilEnd = 0;
+
+        if (parts.length === 3) {
+            msUntilEnd =
+                (parts[0] * 3600 +
+                    parts[1] * 60 +
+                    parts[2]) *
+                1000;
+        } else if (parts.length === 2) {
+            msUntilEnd =
+                (parts[0] * 60 + parts[1]) * 1000;
+        }
+
+        if (msUntilEnd <= 0) {
+            throw new Error(
+                `Invalid in-class timer: ${timeLeftStr}`
+            );
+        }
+
+        sendLog(
+            `In-class timer: ${timeLeftStr} remaining.`
+        );
+
+        return msUntilEnd;
+    } catch (error) {
+        sendLog(
+            `Could not read in-class timer: ${error.message}`,
+            "warn"
+        );
+
+        return null;
+    }
+}
 
 // ============================================================
 // JOIN CLASS
@@ -551,17 +624,17 @@ async function joinAndAttend(page, classInfo) {
 
     sendClassUpdate({
         href: classInfo.href,
-        status: "joining",
+        status: 'joining',
     });
 
     await page.goto(classInfo.href, {
-        waitUntil: "domcontentloaded",
+        waitUntil: 'domcontentloaded',
     });
 
-    const joinBtn = page.locator("a.joinBtn");
+    const joinBtn = page.locator('a.joinBtn');
 
     await joinBtn.waitFor({
-        state: "visible",
+        state: 'visible',
         timeout: 5 * 60 * 1000,
     });
 
@@ -573,12 +646,14 @@ async function joinAndAttend(page, classInfo) {
 
     try {
         [classPage] = await Promise.all([
-            context.waitForEvent("page", {
+            context.waitForEvent('page', {
                 timeout: 10000,
             }),
 
             joinBtn.click(),
         ]);
+
+        await classPage.waitForLoadState('domcontentloaded').catch(() => {});
     } catch {
         classPage = page;
 
@@ -587,66 +662,64 @@ async function joinAndAttend(page, classInfo) {
 
     sendClassUpdate({
         href: classInfo.href,
-        status: "in-class",
+        status: 'in-class',
     });
 
     sendStatus(`Currently attending: ${classInfo.title}`);
 
-    if (!classInfo.endTime) {
-        const start = parseTimeToDate(classInfo.startTime);
+    // ========================================================
+    // DETERMINE CLASS END TIME
+    // ========================================================
 
-        const estimated = new Date(start.getTime() + 100 * 60 * 1000);
+    let waitMs = null;
 
-        classInfo.endTime = estimated.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        });
+    // 1. Prefer the live in-class countdown
+    waitMs = await getInClassRemainingMs(classPage);
+
+    // 2. Fall back to timetable end time
+    if (waitMs === null && classInfo.endTime) {
+        const end = parseTimeToDate(classInfo.endTime);
+
+        waitMs = end.getTime() - Date.now();
+
+        sendLog(`Using timetable end time: ${classInfo.endTime}`);
     }
 
-    await waitForClassToEnd(classPage, classInfo);
+    // 3. Do NOT invent a fake class duration
+    if (waitMs === null) {
+        throw new Error(`Unable to determine end time for ${classInfo.title}.`);
+    }
+
+    // ========================================================
+    // WAIT UNTIL CLASS ENDS
+    // ========================================================
+
+    await waitForClassToEnd(classPage, classInfo, waitMs);
+
+    // Close only the class tab if it is separate
+    if (classPage !== page && !classPage.isClosed()) {
+        await classPage.close().catch(() => {});
+    }
 }
 
 // ============================================================
 // WAIT FOR CLASS END
 // ============================================================
 
-async function waitForClassToEnd(classPage, classInfo) {
-    const end = parseTimeToDate(classInfo.endTime);
-
-    const waitMs = end.getTime() - Date.now();
-
+async function waitForClassToEnd(classPage, classInfo, waitMs) {
     if (waitMs > 0) {
-        await countdownWait("Class ends in", waitMs, classInfo);
+        await countdownWait('Class ends in', waitMs, classInfo);
     }
 
-    sendStatus("Scheduled class time reached. Checking session...");
+    if (isQuitting) return;
 
-    while (!isQuitting) {
-        try {
-            const frame = classPage.frameLocator("iframe").first();
+    sendStatus(`${classInfo.title} ended.`);
+    sendLog(`${classInfo.title} ended.`);
 
-            const ended = await frame
-                .locator("h2:has-text('This session has ended')")
-                .isVisible()
-                .catch(() => false);
-
-            if (ended) {
-                sendLog(`${classInfo.title} ended.`);
-
-                sendClassUpdate({
-                    href: classInfo.href,
-                    status: "done",
-                });
-
-                return;
-            }
-        } catch (error) {
-            sendLog(`Session check error: ${error.message}`, "warn");
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-    }
+    sendClassUpdate({
+        href: classInfo.href,
+        status: 'done',
+    });
 }
 
 // ============================================================

@@ -23,13 +23,14 @@ const quitBtn = document.getElementById("quitBtn");
 function updateClock() {
     const now = new Date();
 
-    const hh = String(now.getHours()).padStart(2, "0");
+    const time = now.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+    });
 
-    const mm = String(now.getMinutes()).padStart(2, "0");
-
-    const ss = String(now.getSeconds()).padStart(2, "0");
-
-    clockEl.textContent = `${hh}:${mm}:${ss}`;
+    clockEl.textContent = time;
 
     clockDate.textContent = now.toLocaleDateString("en-US", {
         weekday: "long",
@@ -105,12 +106,12 @@ function renderClasses() {
 
             const countdownHtml = isActive
                 ? `
-                        <div class="class-countdown">
-                            Class joins in:
-                            ${countdownTarget.remaining}
-                        </div>
+                    <div class="class-countdown">
+                        ${countdownTarget.label}:
+                        ${countdownTarget.remaining}
+                    </div>
                     `
-                : "";
+                : '';
 
             return `
 
@@ -203,7 +204,7 @@ window.bot.onCountdown(({ label, remaining, currentClass }) => {
     if (currentClass) {
         countdownTarget = {
             classTitle: currentClass.title,
-
+            label,
             remaining,
         };
 
