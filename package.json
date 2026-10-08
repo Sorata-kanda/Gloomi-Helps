@@ -1,6 +1,6 @@
 {
     "name": "gloomi-help",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Gloomi Help - LPU class attendance assistant",
     "main": "main.js",
     "scripts": {
