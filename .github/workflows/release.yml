@@ -26,15 +26,14 @@ jobs:
         run: npm ci
 
       - name: Build Windows app
-        run: npm run build
+        run: npm run build -- --publish never
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             dist/*.exe
             dist/*.exe.blockmap
             dist/latest.yml
           generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
